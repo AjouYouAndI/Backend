@@ -1,4 +1,4 @@
-package com.youandi.youandi;
+package org.youandi.youandi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
