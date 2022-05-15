@@ -50,4 +50,10 @@ public class ExceptionAdvice {
     protected CommonResult refreshTokenException(HttpServletRequest request, Exception e){
         return responseService.getFailResultWithMsg("Refresh Token이 옳지 않습니다.");
     }
+
+    @ExceptionHandler(CAccessDeniedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected CommonResult accessDeniedException(HttpServletRequest request, Exception e){
+        return responseService.getFailResultWithMsg("보유한 권한을 접근할 수 없습니다.");
+    }
 }
