@@ -54,6 +54,12 @@ public class ExceptionAdvice {
     @ExceptionHandler(CAccessDeniedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult accessDeniedException(HttpServletRequest request, Exception e){
-        return responseService.getFailResultWithMsg("보유한 권한을 접근할 수 없습니다.");
+        return responseService.getFailResultWithMsg("보유한 권한으로 접근할 수 없습니다.");
+    }
+
+    @ExceptionHandler(CPostNotExistedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected CommonResult postNotExistedException(HttpServletRequest request, Exception e){
+        return responseService.getFailResultWithMsg("해당 게시글이 존재하지 않습니다.");
     }
 }

@@ -11,7 +11,7 @@ import org.youandi.youandi.domain.response.CommonResult;
 
 @RequiredArgsConstructor
 @RestController
-@Api(tags = {"4. 에러 컨트롤러"})
+@Api(tags = {"6. 에러 컨트롤러"})
 @RequestMapping(value= "/exception")
 public class ExceptionController {
 
