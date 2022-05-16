@@ -62,4 +62,10 @@ public class ExceptionAdvice {
     protected CommonResult postNotExistedException(HttpServletRequest request, Exception e){
         return responseService.getFailResultWithMsg("해당 게시글이 존재하지 않습니다.");
     }
+
+    @ExceptionHandler(CEmotionResultFailedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected CommonResult emotionResultFailedException(HttpServletRequest request, Exception e){
+        return responseService.getFailResultWithMsg("해당 게시글에 대한 감정 결과가 아직 분석중입니다.");
+    }
 }

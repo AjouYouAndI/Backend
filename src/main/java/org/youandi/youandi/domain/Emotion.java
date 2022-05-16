@@ -14,9 +14,15 @@ public class Emotion {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private EmotionType emotionType;
 
     @OneToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public Emotion(EmotionType emotionType, Post post) {
+        this.emotionType = emotionType;
+        this.post = post;
+    }
 }
