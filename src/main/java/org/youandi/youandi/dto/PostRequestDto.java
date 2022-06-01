@@ -1,10 +1,11 @@
 package org.youandi.youandi.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class PostRequestDto {
     private String content;
     private double latitude;

@@ -2,6 +2,7 @@ package org.youandi.youandi.controller;
 
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -98,5 +99,19 @@ public class PostController {
         String email = authentication.getName();
         postService.deletePost(postId, email);
         return responseService.getSuccessResult();
+    }
+
+
+    @ApiOperation(value = "지오 코딩 조회", notes = "경도 위도를 입력하하면 위치 정보 조회")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK !!"),
+            @ApiResponse(code = 400, message = "BAD REQUEST !!"),
+            @ApiResponse(code = 404, message = "NOT FOUND !!"),
+            @ApiResponse(code = 500, message = "INTERNAL SERVER ERROR !!")
+    })
+    @GetMapping("/geo")
+    public CommonResult getGeo(@RequestParam Double lati, @RequestParam Double longi) {
+        Object object = postService.getRegion(lati, longi);
+        return responseService.getSingleResult(object);
     }
 }

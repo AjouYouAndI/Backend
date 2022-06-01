@@ -28,10 +28,14 @@ public class Post extends TimeStamped{
     @Column(nullable = false)
     private double longitude;
 
-    public Post(PostRequestDto postRequestDto, User user) {
+    @Column(nullable = false)
+    private String region;
+
+    public Post(PostRequestDto postRequestDto, User user, String region) {
         this.content = postRequestDto.getContent();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
         this.user = user;
+        this.region = region;
     }
 }
