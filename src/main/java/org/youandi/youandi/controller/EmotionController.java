@@ -7,8 +7,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.youandi.youandi.domain.response.CommonResult;
 import org.youandi.youandi.dto.EmotionRequestDto;
-import org.youandi.youandi.dto.PostRequestDto;
 import org.youandi.youandi.service.EmotionService;
+import org.youandi.youandi.service.PostService;
 import org.youandi.youandi.service.ResponseService;
 
 @RestController
@@ -19,6 +19,7 @@ public class EmotionController {
 
     private final ResponseService responseService;
     private final EmotionService emotionService;
+    private final PostService postService;
 
     @ApiOperation(value = "게시글별 감정 추가", notes = "게시글에 감정 결과를 추가한다")
     @ApiResponses({

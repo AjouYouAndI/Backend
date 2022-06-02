@@ -1,12 +1,14 @@
 package org.youandi.youandi.domain;
 
 public enum EmotionType {
-    DEFAULT(Values.DEFAULT),
-    EXCITED(Values.EXCITED),
-    HAPPY(Values.HAPPY),
-    SAD(Values.SAD),
+
+    HORROR(Values.HORROR),
+    FRIGHTEN(Values.FRIGHTEN),
     ANGRY(Values.ANGRY),
-    DEPRESSED(Values.DEPRESSED);
+    SAD(Values.SAD),
+    DEFAULT(Values.DEFAULT),
+    HAPPY(Values.HAPPY),
+    HATE(Values.HATE);
 
     private String value;
 
@@ -17,11 +19,12 @@ public enum EmotionType {
     }
 
     public static class Values {
-        public static final String DEFAULT = "DEFAULT";
-        public static final String EXCITED = "EXCITED";
-        public static final String HAPPY = "HAPPY";
-        public static final String SAD = "SAD";
+        public static final String HORROR = "HORROR";
+        public static final String FRIGHTEN = "FRIGHTEN";
         public static final String ANGRY = "ANGRY";
-        public static final String DEPRESSED = "DEPRESSED";
+        public static final String SAD = "SAD";
+        public static final String DEFAULT = "DEFAULT";
+        public static final String HAPPY = "HAPPY";
+        public static final String HATE = "HATE";
     }
 }

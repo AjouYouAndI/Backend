@@ -7,14 +7,21 @@ import com.sun.istack.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.youandi.youandi.advice.CAuthenticationEntryPointException;
 import org.youandi.youandi.advice.CPostNotExistedException;
 import org.youandi.youandi.advice.CRegionFailedException;
 import org.youandi.youandi.advice.CUsernameNotFoundException;
+import org.youandi.youandi.domain.Emotion;
+import org.youandi.youandi.domain.EmotionType;
 import org.youandi.youandi.domain.Post;
 import org.youandi.youandi.domain.User;
 import org.youandi.youandi.dto.PostRequestDto;
+import org.youandi.youandi.repository.EmotionRepository;
 import org.youandi.youandi.repository.PostRepository;
 import org.youandi.youandi.repository.UserRepository;
 
@@ -25,12 +32,14 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final EmotionRepository emotionRepository;
 
     public List<Post> getAllPost() {
         return postRepository.findAll();
@@ -43,10 +52,54 @@ public class PostService {
             throw new CRegionFailedException();
         }
         Post post = new Post(postRequestDto, user, region);
+        getEmotion(post);
         postRepository.save(post);
         return post;
     }
 
+    // 감정 조회: 감정 서버와 통신
+    public void getEmotion(Post post) {
+        String content = post.getContent();
+
+        String url = "http://3.39.205.52:8000/predict";
+
+        RestTemplate restTemplate = new RestTemplate();
+        UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).queryParam("string", content).build();
+        ResponseEntity<String> response = restTemplate.getForEntity(uri.toUri(), String.class);
+        String emotion = ""+response.getBody();
+        saveEmotion(emotion, post);
+    }
+
+    public void saveEmotion(String emotion, Post post) {
+        EmotionType type = EmotionType.DEFAULT;
+
+        switch (emotion){
+            case "공포":
+                type = EmotionType.HORROR;
+                break;
+            case "놀람":
+                type = EmotionType.FRIGHTEN;
+                break;
+            case "분노":
+                type = EmotionType.ANGRY;
+                break;
+            case "슬픔":
+                type = EmotionType.SAD;
+                break;
+            case "행복":
+                type = EmotionType.HAPPY;
+            case "혐오":
+                type = EmotionType.HATE;
+                break;
+            default:
+                break;
+        }
+
+        Emotion emotionEntity = new Emotion(type, post);
+        emotionRepository.save(emotionEntity);
+    }
+
+    // 카카오 지오 코딩 api : 경도 위도 -> 주소
     public String getRegion(double latitude, double longitude){
         String REST_KEY = "f1003c1b0aeede709a2b8aa8d297e4b7";
         String url = "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=" + longitude + "&y=" + latitude;
