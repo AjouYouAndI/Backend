@@ -21,6 +21,9 @@ public class Post extends TimeStamped{
     private User user;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
@@ -40,6 +43,7 @@ public class Post extends TimeStamped{
         this.content = postRequestDto.getContent();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
+        this.title = postRequestDto.getTitle();
         this.user = user;
         this.region = region;
     }

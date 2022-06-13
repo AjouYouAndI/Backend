@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.youandi.youandi.domain.Post;
 import org.youandi.youandi.domain.response.CommonResult;
+import org.youandi.youandi.dto.PostListResponseDto;
 import org.youandi.youandi.dto.PostRequestDto;
 import org.youandi.youandi.service.PostService;
 import org.youandi.youandi.service.ResponseService;
@@ -62,7 +63,7 @@ public class PostController {
     })
     @GetMapping("/around")
     public CommonResult getAroundPost(double lati, double longi) {
-        List<Post> postList = postService.getAroundPosts(lati, longi);
+        List<PostListResponseDto> postList = postService.getAroundPosts(lati, longi);
         return responseService.getListResult(postList);
     }
 

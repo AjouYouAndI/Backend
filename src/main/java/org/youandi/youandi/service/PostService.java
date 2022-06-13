@@ -21,6 +21,7 @@ import org.youandi.youandi.domain.Emotion;
 import org.youandi.youandi.domain.EmotionType;
 import org.youandi.youandi.domain.Post;
 import org.youandi.youandi.domain.User;
+import org.youandi.youandi.dto.PostListResponseDto;
 import org.youandi.youandi.dto.PostRequestDto;
 import org.youandi.youandi.repository.EmotionRepository;
 import org.youandi.youandi.repository.PostRepository;
@@ -32,6 +33,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -102,11 +104,17 @@ public class PostService {
         Emotion emotionEntity = new Emotion(type, post);
         emotionRepository.save(emotionEntity);
         post.updateEmotion(type);
+        postRepository.save(post);
     }
 
-    public List<Post> getAroundPosts(double latitude, double longitude) {
+    public List<PostListResponseDto> getAroundPosts(double latitude, double longitude) {
         String region = getRegion(latitude, longitude);
-        return postRepository.findAllByRegion(region);
+        List<Post> postList = postRepository.findAllByRegion(region);
+        List<PostListResponseDto> responseDtos = new ArrayList<>();
+        for(Post post : postList) {
+            responseDtos.add(new PostListResponseDto(post));
+        }
+        return responseDtos;
     }
 
     private static String GEOCODE_URL="https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?";
