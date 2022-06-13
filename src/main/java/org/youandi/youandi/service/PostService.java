@@ -1,5 +1,6 @@
 package org.youandi.youandi.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +28,10 @@ import org.youandi.youandi.repository.UserRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,6 +43,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final EmotionRepository emotionRepository;
+    private final RestTemplate restTemplate;
+
 
     public List<Post> getAllPost() {
         return postRepository.findAll();
@@ -48,12 +53,12 @@ public class PostService {
     public Post createPost(@NotNull PostRequestDto postRequestDto, String email) {
         User user = userRepository.findByEmail(email).orElseThrow(CUsernameNotFoundException::new);
         String region = getRegion(postRequestDto.getLatitude(), postRequestDto.getLongitude());
-        if(region==""){
+        if(region.equals("")){
             throw new CRegionFailedException();
         }
         Post post = new Post(postRequestDto, user, region);
-        getEmotion(post);
         postRepository.save(post);
+        getEmotion(post);
         return post;
     }
 
@@ -63,7 +68,6 @@ public class PostService {
 
         String url = "http://3.39.205.52:8000/predict";
 
-        RestTemplate restTemplate = new RestTemplate();
         UriComponents uri = UriComponentsBuilder.fromHttpUrl(url).queryParam("string", content).build();
         ResponseEntity<String> response = restTemplate.getForEntity(uri.toUri(), String.class);
         String emotion = ""+response.getBody();
@@ -97,22 +101,37 @@ public class PostService {
 
         Emotion emotionEntity = new Emotion(type, post);
         emotionRepository.save(emotionEntity);
+        post.updateEmotion(type);
     }
+
+    public List<Post> getAroundPosts(double latitude, double longitude) {
+        String region = getRegion(latitude, longitude);
+        return postRepository.findAllByRegion(region);
+    }
+
+    private static String GEOCODE_URL="https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?";
+    private static String GEOCODE_USER_INFO="KakaoAK 23b5628ee9c996d7013c4cea7cfc9f4c";
+
+
 
     // 카카오 지오 코딩 api : 경도 위도 -> 주소
     public String getRegion(double latitude, double longitude){
-        String REST_KEY = "f1003c1b0aeede709a2b8aa8d297e4b7";
-        String url = "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=" + longitude + "&y=" + latitude;
+        String REST_KEY = "23b5628ee9c996d7013c4cea7cfc9f4c";
 
         BufferedReader br = null;
         JSONObject obj = new JSONObject();
         ObjectMapper mapper = new ObjectMapper();
         URL converted_url;
         try {
-            converted_url = new URL(url);
+            converted_url = new URL(GEOCODE_URL+"x="+longitude+"&y="+latitude);
             URLConnection conn = converted_url.openConnection();
-            conn.setRequestProperty("Authorization", "KakaoAK " + REST_KEY);
-            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            conn.setRequestProperty("Authorization", GEOCODE_USER_INFO);
+            conn.setRequestProperty("content-type", "application/json");
+            conn.setDoOutput(true);
+            conn.setUseCaches(false);
+
+            Charset charset = Charset.forName("UTF-8");
+            br = new BufferedReader(new InputStreamReader(conn.getInputStream(), charset));
 
             if(br != null) obj = mapper.readValue(br, JSONObject.class);
         } catch (Exception e) {

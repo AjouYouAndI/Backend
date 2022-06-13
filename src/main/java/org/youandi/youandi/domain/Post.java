@@ -2,6 +2,7 @@ package org.youandi.youandi.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.youandi.youandi.dto.PostRequestDto;
 
 import javax.persistence.*;
@@ -31,11 +32,19 @@ public class Post extends TimeStamped{
     @Column(nullable = false)
     private String region;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private EmotionType emotionType;
+
     public Post(PostRequestDto postRequestDto, User user, String region) {
         this.content = postRequestDto.getContent();
         this.latitude = postRequestDto.getLatitude();
         this.longitude = postRequestDto.getLongitude();
         this.user = user;
         this.region = region;
+    }
+
+    public void updateEmotion(EmotionType type) {
+        this.emotionType = type;
     }
 }

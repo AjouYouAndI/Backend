@@ -9,6 +9,7 @@ import org.youandi.youandi.domain.User;
 import org.youandi.youandi.domain.response.CommonResult;
 import org.youandi.youandi.dto.SignUpRequestDto;
 import org.youandi.youandi.service.AdminService;
+import org.youandi.youandi.service.PostService;
 import org.youandi.youandi.service.ResponseService;
 import org.youandi.youandi.service.UserService;
 
@@ -22,6 +23,7 @@ public class AdminController {
     private final UserService userService;
     private final ResponseService responseService;
     private final AdminService adminService;
+    private final PostService postService;
 
     @ApiOperation(value = "관리자 회원가입", notes = "관리자 회원가입을 한다")
     @ApiResponses({
@@ -52,6 +54,24 @@ public class AdminController {
         String email = authentication.getName();
         List<User> userList = adminService.findAllUser(email);
         return responseService.getListResult(userList);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
+    })
+    @ApiOperation(value = "모든 게시글 삭제", notes = "모든 게시글을 삭제한다")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK !!"),
+            @ApiResponse(code = 400, message = "BAD REQUEST !!"),
+            @ApiResponse(code = 404, message = "NOT FOUND !!"),
+            @ApiResponse(code = 500, message = "INTERNAL SERVER ERROR !!")
+    })
+    @DeleteMapping("/posts")
+    public CommonResult deleteAllPost() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        adminService.deleteAllPosts(email);
+        return responseService.getSuccessResult();
     }
 
 

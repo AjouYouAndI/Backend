@@ -53,6 +53,19 @@ public class PostController {
         return responseService.getListResult(postList);
     }
 
+    @ApiOperation(value = "주변 모든 게시글 조회", notes = "주변 모든 게시글을 조회한다")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK !!"),
+            @ApiResponse(code = 400, message = "BAD REQUEST !!"),
+            @ApiResponse(code = 404, message = "NOT FOUND !!"),
+            @ApiResponse(code = 500, message = "INTERNAL SERVER ERROR !!")
+    })
+    @GetMapping("/around")
+    public CommonResult getAroundPost(double lati, double longi) {
+        List<Post> postList = postService.getAroundPosts(lati, longi);
+        return responseService.getListResult(postList);
+    }
+
     @ApiOperation(value = "게시글 단건 조회", notes = "게시글 단건을 조회한다")
     @ApiResponses({
             @ApiResponse(code = 200, message = "OK !!"),
@@ -114,4 +127,8 @@ public class PostController {
         Object object = postService.getRegion(lati, longi);
         return responseService.getSingleResult(object);
     }
+
 }
+
+
+
